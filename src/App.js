@@ -6,8 +6,8 @@ import orderBy from "lodash/orderBy";
 
 export default class App extends React.Component {
   constructor() {
-    super();
-    console.log(uiData);
+    //loads info on page before render
+    super(); // required to access variables of parent class
     this.state = {
       //state always an object
       isFavoritesChecked: false,
@@ -17,39 +17,41 @@ export default class App extends React.Component {
     };
   }
   filterFuncs(e) {
-    const isFavoritesCicked = document.getElementById("viewModeFavorites")
-      .checked; //grabbing user input, checks id of radio button that user clicks
+    const isFavoritesClicked = document.getElementById("viewModeFavorites")
+      .checked; //grabbing user input, checks id of radio button that user clicks, returns a boolean
     const searchInput = document
       .getElementById("search-input")
       .value.toLowerCase();
-    const allFuncs = [...this.state.allFuncs]; //get the copy of all of our functions; assigned to uiData; shallow copy of array
-    if (isFavoritesCicked) {
-      this.setState({ isFavoritesChecked: true }); //checks current state of function, then reverses it with !this
+    const allFuncs = [...this.state.allFuncs]; //get the copy allFuncs array and grabs the descending order as well
+    if (isFavoritesClicked) {
+      this.setState({ isFavoritesChecked: true }); // if favorite is clicked, sets state of object to true
       const favoriteFuncs = allFuncs.filter((func) => {
-        return func.isFavorite; // filtering out functions into new array returning all functions that are favorited
+        return func.isFavorite; // filtering out functions into new array returning all functions that are favorited, checks ui.js for boolean
       });
       const filteredFuncs = favoriteFuncs.filter((func) => {
-        return func.name.toLowerCase().indexOf(searchInput) >= 0; //TODO add comment
+        return func.name.toLowerCase().indexOf(searchInput) >= 0; //filters favorites according to what is typed into search bar, the value is converted to lowerCase to prevent case-sensitivity
       });
-      const orderArr = JSON.parse(this.state.orderBy);
-      const orderedFuncs = orderBy(filteredFuncs, ...orderArr);
-      this.setState({ displayedFuncs: orderedFuncs }); //will display all filtered functions
+      const orderArr = JSON.parse(this.state.orderBy); // sets orderBy to an array of strings
+      const orderedFuncs = orderBy(filteredFuncs, ...orderArr); // using method to assign all favorite funcs in descending order
+      this.setState({ displayedFuncs: orderedFuncs }); //Maybe: changes the object's state to contain the value of ordered func
     } else {
-      this.setState({ isFavoritesChecked: false }); //TODO fix comment; checks current state of function, then reverses it with !this
+      this.setState({ isFavoritesChecked: false }); //if favorites is not clicked change state of that object
       const filteredFuncs = allFuncs.filter((func) => {
-        return func.name.toLowerCase().indexOf(searchInput) >= 0; //TODO whatever is typed, is filtered and returns similar functions that include user input
+        return func.name.toLowerCase().indexOf(searchInput) >= 0; //filters favorites according to what is typed into search bar, the value is converted to lowerCase to prevent case-sensitivity
       });
-      const orderArr = JSON.parse(this.state.orderBy);
-      const orderedFuncs = orderBy(filteredFuncs, ...orderArr);
-      this.setState({ displayedFuncs: orderedFuncs }); //else will display all functions without filter
+      const orderArr = JSON.parse(this.state.orderBy); // TODO comment
+      const orderedFuncs = orderBy(filteredFuncs, ...orderArr); // using method to assign all funcs in descending order
+      this.setState({ displayedFuncs: orderedFuncs }); //changes the object's state to contain the value of ordered func
     }
   }
 
   changeOrder(e) {
     //"e" is synthetic event
     this.setState({ orderBy: e.target.value }, () => {
-      this.filterFuncs();
+      // changes state of object by giving it current value of selected target in dropdown menu, ex. click A-Z return [num, asc]
+      this.filterFuncs(); // return the filteredfuncs that following the order parameters
     });
+    console.log(e.target.value);
   }
 
   render() {
@@ -130,7 +132,6 @@ export default class App extends React.Component {
               </div>
             </div>
           </div>
-
           {this.state.displayedFuncs.map((functionUi) => {
             //creates new array with the results of calling the functionUI
             const { name, desc, inputs } = functionUi; //destructuring
